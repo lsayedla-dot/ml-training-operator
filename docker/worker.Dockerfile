@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
 COPY src/ src/
 
-RUN pip install --no-cache-dir -e ".[worker]" \
+RUN pip install --no-cache-dir ".[worker]" \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 ENTRYPOINT ["python", "-m", "src.worker.train"]
