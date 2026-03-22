@@ -19,7 +19,9 @@ def trained_model():
     """
     model = torch.nn.Sequential(
         torch.nn.Flatten(),
-        torch.nn.Linear(3 * 224 * 224, 128),
+        torch.nn.Linear(3 * 224 * 224, 256),
+        torch.nn.ReLU(),
+        torch.nn.Linear(256, 128),
         torch.nn.ReLU(),
         torch.nn.Linear(128, 4),
     )

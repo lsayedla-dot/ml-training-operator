@@ -31,7 +31,7 @@ def export_onnx(
         sample_input,
         output_path,
         export_params=True,
-        opset_version=18,
+        opset_version=17,
         do_constant_folding=True,
         input_names=["input"],
         output_names=["output"],
@@ -63,15 +63,27 @@ def quantize_int8(
     3-4x and improves inference latency 2-3x with minimal accuracy loss.
     """
     from onnxruntime.quantization import QuantType, quantize_dynamic
+    from onnxruntime.quantization.shape_inference import quant_pre_process
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
 
-    # Use dynamic quantization (simpler, doesn't require calibration data)
+    # Preprocess model for quantization (fixes shape inference issues)
+    preprocessed_path = onnx_path.replace(".onnx", "_preprocessed.onnx")
+    try:
+        quant_pre_process(onnx_path, preprocessed_path)
+        source_path = preprocessed_path
+    except Exception:
+        source_path = onnx_path
+
     quantize_dynamic(
-        model_input=onnx_path,
+        model_input=source_path,
         model_output=output_path,
         weight_type=QuantType.QInt8,
     )
+
+    # Clean up preprocessed file
+    if os.path.exists(preprocessed_path):
+        os.remove(preprocessed_path)
 
     model_size = os.path.getsize(output_path) / (1024 * 1024)
     logger.info("model_quantized", path=output_path, size_mb=round(model_size, 2))
