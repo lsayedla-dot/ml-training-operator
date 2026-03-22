@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: train-JOB_ID-headless
+  namespace: ml-training
+  labels:
+    app: ml-training-worker
+    job-id: JOB_ID
+spec:
+  clusterIP: None
+  selector:
+    app: ml-training-worker
+    job-id: JOB_ID
+  ports:
+    - name: ddp
+      port: 29500
+      targetPort: 29500

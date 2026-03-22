@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ml-training-config
+  namespace: ml-training
+data:
+  DEFAULT_CPU: "2"
+  DEFAULT_MEMORY: "4Gi"
+  MAX_RETRIES: "3"
+  RETRY_BASE_DELAY: "60"
+  RETRY_BACKOFF_MULTIPLIER: "2.0"
+  CLEANUP_TTL_HOURS: "24"
+  LOG_LEVEL: "INFO"

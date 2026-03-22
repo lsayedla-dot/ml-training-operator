@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-training-api
+  namespace: ml-training
+  labels:
+    app: ml-training-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-training-api
+  template:
+    metadata:
+      labels:
+        app: ml-training-api
+    spec:
+      serviceAccountName: ml-training-operator
+      containers:
+        - name: api
+          image: ml-training-api:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: ml-training-config
+          env:
+            - name: DATABASE_PATH
+              value: /data/db/jobs.db
+          volumeMounts:
+            - name: db-storage
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: ml-training-db

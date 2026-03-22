@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train-JOBNAME-ID-rankN
+  labels:
+    app: ml-training-worker
+    job-id: JOB_ID
+    rank: "N"
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: ml-training-worker
+        job-id: JOB_ID
+        rank: "N"
+    spec:
+      serviceAccountName: ml-training-operator
+      restartPolicy: Never
+      containers:
+        - name: training-worker
+          image: ml-training-worker:latest
+          command: ["python", "-m", "src.worker.train"]
+          env:
+            - name: MODEL_TYPE
+              value: "resnet18"
+            - name: EPOCHS
+              value: "10"
+            - name: BATCH_SIZE
+              value: "32"
+            - name: LEARNING_RATE
+              value: "0.001"
+            - name: CHECKPOINT_DIR
+              value: "/checkpoints"
+            - name: DATA_DIR
+              value: "/data"
+            - name: WORLD_SIZE
+              value: "NUM_WORKERS"
+            - name: RANK
+              value: "N"
+            - name: MASTER_ADDR
+              value: "train-JOB_ID-headless.ml-training.svc.cluster.local"
+            - name: MASTER_PORT
+              value: "29500"
+          resources:
+            requests:
+              cpu: "2"
+              memory: 4Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          volumeMounts:
+            - name: checkpoints
+              mountPath: /checkpoints
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: checkpoints
+          persistentVolumeClaim:
+            claimName: ml-training-checkpoints
+        - name: data
+          persistentVolumeClaim:
+            claimName: ml-training-data

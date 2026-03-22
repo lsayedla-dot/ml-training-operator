@@ -1,0 +1,92 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Jobs Submitted (Total)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(training_jobs_submitted_total)",
+          "legendFormat": "Total Submitted"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "title": "Active Jobs",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "training_jobs_active",
+          "legendFormat": "Active"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 }
+    },
+    {
+      "title": "Jobs Completed",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(training_jobs_completed_total) by (status)",
+          "legendFormat": "{{status}}"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 }
+    },
+    {
+      "title": "Job Retries",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(training_job_retries_total)",
+          "legendFormat": "Total Retries"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+    },
+    {
+      "title": "Job Duration Distribution",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(training_job_duration_seconds_bucket[5m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(training_job_duration_seconds_bucket[5m]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(training_job_duration_seconds_bucket[5m]))",
+          "legendFormat": "p99"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 }
+    },
+    {
+      "title": "Jobs by Model Type",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(training_jobs_submitted_total[5m])) by (model_type)",
+          "legendFormat": "{{model_type}}"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["ml-training", "kubernetes"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "ML Training Operator",
+  "uid": "ml-training-operator"
+}
