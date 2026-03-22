@@ -196,6 +196,6 @@ See [Design Decisions](docs/DESIGN_DECISIONS.md) for detailed rationale on:
 
 **Abhinav Yedla**
 - GitHub: [@lsayedla-dot](https://github.com/lsayedla-dot)
-- Email: lsayedla@gmail.com
-- LinkedIn: [abhinavyedla](https://linkedin.com/in/abhinavyedla)
+- Email: abhinavyls95@gmail.com
+- LinkedIn: [abhinav-yedla](https://www.linkedin.com/in/abhinav-yedla/)
 - Certifications: GCP Professional Data Engineer, GCP Professional ML Engineer
