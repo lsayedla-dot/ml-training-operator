@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import time
@@ -26,10 +27,7 @@ def export_onnx(
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     model.eval()
 
-    torch.onnx.export(
-        model,
-        sample_input,
-        output_path,
+    export_kwargs = dict(
         export_params=True,
         opset_version=17,
         do_constant_folding=True,
@@ -40,6 +38,12 @@ def export_onnx(
             "output": {0: "batch_size"},
         },
     )
+    # Newer PyTorch versions default to dynamo exporter which produces
+    # graphs incompatible with onnxruntime quantization. Force legacy.
+    if "dynamo" in inspect.signature(torch.onnx.export).parameters:
+        export_kwargs["dynamo"] = False
+
+    torch.onnx.export(model, sample_input, output_path, **export_kwargs)
 
     # Verify the exported model
     import onnx
